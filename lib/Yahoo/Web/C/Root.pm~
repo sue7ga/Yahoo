@@ -1,0 +1,31 @@
+package Yahoo::Web::C::Root;
+
+use strict;
+use warnings;
+use utf8;
+use JSON;
+use LWP::UserAgent;
+use URI;
+
+
+sub index{
+ my($self,$c) = @_; 
+
+ my $config = Yahoo->load_config();
+
+ my($pref,$city,$pref_result,$city_result);
+
+ if(my $lat_lng = $c->req->param('lat_lng')){
+     my @lat_lng = split(/,/,$lat_lng);
+     my $uri = URI->new('http://reverse.search.olp.yahooapis.jp/OpenLocalPlatform/V1/reverseGeoCoder');
+    $uri->query_form("lat" => $lat_lng[0],"lon" => $lat_lng[1],"output" => "json","appid" => $config->{Yahoo}->{API_ID});
+   my $res = LWP::UserAgent->new()->get($uri);    
+
+ }
+  
+ return $c->render("index.tx" => {'uri' => $res});
+
+}
+
+
+1;
